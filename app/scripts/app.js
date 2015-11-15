@@ -1,4 +1,4 @@
-var blocJams = angular.module('blocJams', [ui.router]);
+var blocJams = angular.module('blocJams', ['ui.router']);
 
 // $stateProvider - config app's paths
 blocJams.config(function($stateProvider, $locationProvider) 
@@ -14,12 +14,18 @@ blocJams.config(function($stateProvider, $locationProvider)
         {
             url: '/album',
             controller: 'Album.controller',
-            templateUrl: '/templates/album.html'
+            templateUrl: 'templates/album.html'
         })
-        .state('test', 
+        .state('collection', 
         {
-            url: '/album',
-            controller: 'Album.controller',
-            templateUrl: '/templates/album.html'
+            url: '/collection',
+            controller: 'Collection.controller',
+            templateUrl: 'templates/collection.html'
+        })
+        .state('landing', 
+        {
+            url: '/landing',
+            controller: 'Landing.controller',
+            templateUrl: 'templates/landing.html'
         });
 });

@@ -1,0 +1,24 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "blocjams refactor",
+  "main": "scripts/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/winber1/bloc-jams-angular.git"
+  },
+  "author": "weballar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/winber1/bloc-jams-angular/issues"
+  },
+  "homepage": "https://github.com/winber1/bloc-jams-angular#readme",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-hapi": "^0.11.0"
+  }
+}

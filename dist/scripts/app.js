@@ -17,19 +17,19 @@ blocJams.config(function($stateProvider, $locationProvider)
         .state('album', 
         {
             url: '/album',
-            controller: 'AlbumController',
+            //controller: 'AlbumController',
             templateUrl: '/templates/album.html'
         })
         .state('collection', 
         {
             url: '/collection',
-            controller: 'CollectionController',
+            //controller: 'CollectionController',
             templateUrl: '/templates/collection.html'
         })
         .state('landing', 
         {
-            url: '/landing',
-            controller: 'LandingController',
+            url: '/',
+           // controller: 'LandingController',
             templateUrl: '/templates/landing.html'
         });
 });

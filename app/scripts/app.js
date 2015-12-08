@@ -35,13 +35,56 @@ blocJams.config(function($stateProvider, $locationProvider)
 });
 
 
-blocJams.controller('AlbumController', ['$scope', function($scope) 
-{
-    $scope.album = angular.copy(albumPicasso);
-
-  
+// ------ Services --------------------------------------
+blocJams.service('SongPlayer', function() {
     
-}]);
+    //test function
+    this.square = function(a) { return a*a };
+ 
+    // play song --------------------------------------------
+    this.setSong = function(album, songNumber) 
+    {
+ 
+        console.log('in songPlayer - service: in setSong ');
+        // stop any existing song; get ready for new song set
+        //if (currentSoundFile) { currentSoundFile.stop(); }
+    
+        //this.currentlyPlayingSongNumber = songNumber;     
+        currentSongFromAlbum = album.songs[songNumber - 1];
+    
+        // buzz api constructor
+        currentSoundFile = new buzz.sound(currentSongFromAlbum.audioUrl, 
+        {
+            formats: [ 'mp3' ],
+            preload: true                
+        });
+        currentSoundFile.play();
+        console.log('ispaused:'+ currentSoundFile.isPaused());
+        currentSoundFile.setVolume(80);
+        console.log('in songPlayer - end - service: in setSong ');
+    };
+
+    
+});
+
+// ------ Controllers --------------------------------------
+blocJams.controller('AlbumController', 
+                    function($scope, SongPlayer) 
+{
+    console.log('AlbumContorller loaded');
+    $scope.album = angular.copy(albumPicasso);
+    $scope.songNumber = 3;
+    
+    // test service
+    $scope.number = 5;
+    //$scope.findSquare = function () 
+    //{  $scope.answer = SongPlayer.square($scope.number); }
+
+    // set (play song)
+    $scope.findSquare = function () 
+    {  SongPlayer.setSong($scope.album, $scope.songNumber); }
+    
+});
 
 
 blocJams.controller('CollectionController', ['$scope', function($scope) 
@@ -63,3 +106,5 @@ blocJams.controller('LandingController', ['$scope', function($scope)
         $scope.landingText += "!";
     };
 }]);
+
+

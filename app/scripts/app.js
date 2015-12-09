@@ -17,19 +17,19 @@ blocJams.config(function($stateProvider, $locationProvider)
         .state('album', 
         {
             url: '/album',
-            //controller: 'AlbumController',
+            controller: 'AlbumController',
             templateUrl: '/templates/album.html'
         })
         .state('collection', 
         {
             url: '/collection',
-            //controller: 'CollectionController',
+            controller: 'CollectionController',
             templateUrl: '/templates/collection.html'
         })
         .state('landing', 
         {
             url: '/',
-           // controller: 'LandingController',
+            controller: 'LandingController',
             templateUrl: '/templates/landing.html'
         });
 });
@@ -89,11 +89,11 @@ blocJams.controller('AlbumController',
 
 blocJams.controller('CollectionController', ['$scope', function($scope) 
 {  
-    $scope.albumCollection = 
-        angular.copy([albumPicasso, albumMarconi, albumPicasso,
-                      albumMarconi, albumPicasso, albumMarconi, 
-                      albumPicasso, albumMarconi, albumPicasso,
-                      albumMarconi, albumPicasso, albumMarconi]);
+    $scope.albums = [];
+     for (var i=0; i < 12; i++) 
+     {
+         $scope.albums.push(angular.copy(albumPicasso));
+     }
 }]);
 
 

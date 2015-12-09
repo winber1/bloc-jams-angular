@@ -81,7 +81,7 @@ blocJams.controller('AlbumController',
     //{  $scope.answer = SongPlayer.square($scope.number); }
 
     // set (play song)
-    $scope.findSquare = function () 
+    $scope.playSong = function () 
     {  SongPlayer.setSong($scope.album, $scope.songNumber); }
     
 });

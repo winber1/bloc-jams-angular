@@ -39,10 +39,9 @@ blocJams.config(function($stateProvider, $locationProvider)
 blocJams.factory('Fixtures', function() 
 {
     // song data
- 
-        var Fixtures = {};
+    var Fixtures = {};
         
-        var albumPicasso = 
+    var albumPicasso = 
      {
      name: 'The Colors',
      artist: 'Pablo Picasso',
@@ -58,7 +57,7 @@ blocJams.factory('Fixtures', function()
       ]
       };
  
-     var albumMarconi = {
+    var albumMarconi = {
          name: 'The Telephone',
          artist: 'Guglielmo Marconi',
          label: 'EM',
@@ -73,10 +72,18 @@ blocJams.factory('Fixtures', function()
          ]
      };
         
-        Fixtures.getAlbum = function() 
-        { return albumPicasso; };
+    Fixtures.getAlbum = function() 
+    { return albumPicasso; };
+    
+    Fixtures.getCollection = function(numberOfAlbums)
+    {   
+        var albums = [];
+        for (var i=0; i < numberOfAlbums; i++) 
+        { albums.push(angular.copy(albumPicasso)); }
+        return albums;
+    };
         
-        return Fixtures;
+    return Fixtures;
 });
 
 blocJams.service('SongPlayer', function() 
@@ -132,13 +139,10 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', 'Fixtures',
 }]);
 
 
-blocJams.controller('CollectionController', ['$scope', function($scope) 
+blocJams.controller('CollectionController', ['$scope', 'Fixtures', function($scope, Fixtures) 
 {  
     $scope.albums = [];
-     for (var i=0; i < 12; i++) 
-     {
-         $scope.albums.push(angular.copy(albumPicasso));
-     }
+    $scope.albums = Fixtures.getCollection(12);
 }]);
 
 

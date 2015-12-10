@@ -88,33 +88,55 @@ blocJams.factory('Fixtures', function()
 
 blocJams.service('SongPlayer', function() 
 {
+    var currentSong = null;    
+    /**
+    * @desc Buzz object audio file
+    * @type {Object}
+    */
+    var currentBuzzObject = null;
     
-    //test function
-    this.square = function(a) { return a*a };
-
-    // play song -------------------------------------------
-    this.setSong = function(album, songNumber) 
+    // -------setSong
+    /**
+    * @function setSong
+    * @desc Stops currently playing song and loads new audio file as currentBuzzObject
+    * @param {Object} song
+    */
+    var setSong = function(song) 
     {
- 
-        console.log('in songPlayer - service: in setSong ');
-        // stop any existing song; get ready for new song set
-        //if (currentSoundFile) { currentSoundFile.stop(); }
-    
-        //this.currentlyPlayingSongNumber = songNumber;     
-        currentSongFromAlbum = album.songs[songNumber - 1];
-    
-        // buzz api constructor
-        currentSoundFile = new buzz.sound(currentSongFromAlbum.audioUrl, 
+        if (currentBuzzObject) 
         {
-            formats: [ 'mp3' ],
-            preload: true                
-        });
-        currentSoundFile.play();
-        console.log('ispaused:'+ currentSoundFile.isPaused());
-        currentSoundFile.setVolume(80);
-        console.log('in songPlayer - end - service: in setSong ');
+            currentBuzzObject.stop();
+            currentSong.playing = null;
+        }
+ 
+        currentBuzzObject = new buzz.sound(song.audioUrl, 
+        { formats: ['mp3'], preload: true });
+ 
+        currentSong = song;
+    };
+    
+    // -------play
+    this.play = function(song) 
+    {   
+        if (currentSong !== song) 
+        {
+            setSong(song);
+            currentBuzzObject.play();  
+            currentSong.playing = true;
+        }
+        else if (currentSong === song) 
+        {
+            if (currentBuzzObject.isPaused()) 
+            {  currentBuzzObject.play();   }
+        } 
     };
 
+    // -------pause
+    this.pause = function(song) 
+    {
+        currentBuzzObject.pause();
+        song.playing = false;
+    };
     
 });
 
@@ -132,10 +154,14 @@ blocJams.controller('AlbumController', ['$scope', 'SongPlayer', 'Fixtures',
     //$scope.findSquare = function () 
     //{  $scope.answer = SongPlayer.square($scope.number); }
 
-    // set (play song)
-    $scope.playSong = function () 
-    {  SongPlayer.setSong($scope.album, $scope.songNumber); }
+    // play song
+    $scope.play = function (song) 
+    {  SongPlayer.play(song); }
     
+    // pause song
+    $scope.pause = function (song) 
+    {  SongPlayer.pause(song); }
+ 
 }]);
 
 

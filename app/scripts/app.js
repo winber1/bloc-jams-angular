@@ -88,6 +88,10 @@ blocJams.factory('Fixtures', function()
 
 blocJams.service('SongPlayer', function() 
 {
+    /**
+    * @desc song playing
+    * @type {Object}
+    */
     var currentSong = null;    
     /**
     * @desc Buzz object audio file
@@ -115,14 +119,29 @@ blocJams.service('SongPlayer', function()
         currentSong = song;
     };
     
+    
+    /**
+    * @function playSong
+    * @desc Play current song 
+    */
+    var playSong = function() 
+    {
+        currentBuzzObject.play();  
+        currentSong.playing = true;
+    }
+    
     // -------play
+    /**
+    * @function play
+    * @desc Manage song selection click: play or pause
+    * @param {Object} song
+    */
     this.play = function(song) 
     {   
         if (currentSong !== song) 
         {
             setSong(song);
-            currentBuzzObject.play();  
-            currentSong.playing = true;
+            playSong();
         }
         else if (currentSong === song) 
         {
@@ -132,6 +151,11 @@ blocJams.service('SongPlayer', function()
     };
 
     // -------pause
+    /**
+    * @function pause
+    * @desc pause currently playing song 
+    * @param {Object} song
+    */
     this.pause = function(song) 
     {
         currentBuzzObject.pause();

@@ -89,19 +89,10 @@ blocJams.factory('Fixtures', function()
 blocJams.service('SongPlayer', function(Fixtures) 
 {   
     var SongPlayer = this;
-    
-    this.test = 5;
-    this.songName = "";
-    this.songLength = "";
-    this.songPlaying = false;
-    this.cSong = {};
-    
     var currentAlbum = Fixtures.getAlbum();
     
-     var getSongIndex = function(song) 
-     {
-        return currentAlbum.songs.indexOf(song);
-     };
+    var getSongIndex = function(song) 
+    { return currentAlbum.songs.indexOf(song); };
       
     /**
     * @desc Buzz object audio file
@@ -161,11 +152,6 @@ blocJams.service('SongPlayer', function(Fixtures)
         if (SongPlayer.currentSong !== song) 
         { setSong(song); }
         playSong();
-        
-        //this.test++;
-        this.songName = song.name;
-        this.songPlaying = true;
-        //console.log("test:"+this.test+":", this.songName);
     };
 
     // -------pause   //SongPlayer service
@@ -179,9 +165,6 @@ blocJams.service('SongPlayer', function(Fixtures)
         song = song || SongPlayer.currentSong;
         currentBuzzObject.pause();
         SongPlayer.currentSong.playing = false;
-        this.songPlaying = false;
-        
-        this.songName = song.name;
     };
     
     this.previous = function()   //SongPlayer service
@@ -198,9 +181,6 @@ blocJams.service('SongPlayer', function(Fixtures)
         var song = currentAlbum.songs[currentSongIndex];
         setSong(song);
         playSong(song);
-        
-        this.songName = song.name;
-        this.songPlaying = true;
     };
     
     this.next = function()   //SongPlayer service
@@ -217,75 +197,56 @@ blocJams.service('SongPlayer', function(Fixtures)
         var song = currentAlbum.songs[currentSongIndex];
         setSong(song);
         playSong(song);
-        
-        this.songName = song.name;
-        this.songPlaying = true;
     };
-
-    this.getTest = function()
-    { return test; }
 });
 
 // ------ Controllers --------------------------------------
 blocJams.controller('AlbumController', ['$scope', 'SongPlayer', 'Fixtures',
                     function($scope, SongPlayer, Fixtures) 
 {
+    // clean up log ---------------------------
+    // 1- remove apply() - (was throwing an error anyhow)
+    // 2 - write setVars fcn to set $scope variables for display
+    // 3 - change setVars fnc to set $scope vars using SongPlayer.currentSong
+    // 4 - remove init of $scope display vars in next and previous fnc's
+    // 5- tried to use SongPlayer.currentSong in player_bar.html template - stil doesn't display
+    // 6- removed extra public vars from SongPlayer service (songName, songLength, songPlaying)
+    
     console.log('AlbumContorller loaded: ',  SongPlayer.test);
     $scope.album = Fixtures.getAlbum();   
     $scope.song = SongPlayer.currentSong;
-    
-    // test service
-    //$scope.number = 5;
-    //$scope.findSquare = function () 
-    //{  $scope.answer = SongPlayer.square($scope.number); }
 
     // play song
     $scope.play = function (song)  //AlbumController
     {  
         SongPlayer.play(song); 
-        //$scope.song = SongPlayer.currentSong;
-        //$scope.test1 = SongPlayer.test;
-        $scope.songName = SongPlayer.songName;
-        $scope.songLength = SongPlayer.currentSong.length;
-        $scope.songPlaying = SongPlayer.currentSong.playing;
-        $scope.songPlaying = SongPlayer.songPlaying;
-        $scope.$apply();
+        setVars();
     }
     
     // pause song
     $scope.pause = function (song)   //AlbumController
     {  
         SongPlayer.pause(song);
-        $scope.song = song;
-        $scope.songName = SongPlayer.songName;
-        $scope.songLength = SongPlayer.currentSong.length;
-        $scope.songPlaying = SongPlayer.songPlaying;
+        setVars();
     }
     
     $scope.previous = function()  //AlbumController
     { 
-        $scope.songName = "";
-        $scope.songLength = "";
-        $scope.songPlaying = "";
-        
         SongPlayer.previous();
-        $scope.songName = SongPlayer.songName;
-        $scope.songLength = SongPlayer.currentSong.length;
-        $scope.songPlaying = SongPlayer.songPlaying;
-        $scope.$apply();
+        setVars();
     }
     
     $scope.next = function()  //AlbumController
     { 
-        $scope.songName = "";
-        $scope.songLength = "";
-        $scope.songPlaying = "";
-        
         SongPlayer.next();
-        $scope.songName = SongPlayer.songName;
+        setVars();
+    }
+    
+    setVars = function()
+    {
+        $scope.songName = SongPlayer.currentSong.name;
         $scope.songLength = SongPlayer.currentSong.length;
-        $scope.songPlaying = SongPlayer.songPlaying;
-        //$scope.$apply();
+        $scope.songPlaying = SongPlayer.currentSong.playing;
     }
  
 }]);

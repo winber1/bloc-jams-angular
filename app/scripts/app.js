@@ -86,51 +86,70 @@ blocJams.factory('Fixtures', function()
     return Fixtures;
 });
 
-blocJams.service('SongPlayer', function() 
-{
-    /**
-    * @desc song playing
-    * @type {Object}
-    */
-    var currentSong = null;    
+blocJams.service('SongPlayer', function(Fixtures) 
+{   
+    var SongPlayer = this;
+    
+    this.test = 5;
+    this.songName = "";
+    this.songLength = "";
+    this.songPlaying = false;
+    this.cSong = {};
+    
+    var currentAlbum = Fixtures.getAlbum();
+    
+     var getSongIndex = function(song) 
+     {
+        return currentAlbum.songs.indexOf(song);
+     };
+      
     /**
     * @desc Buzz object audio file
     * @type {Object}
     */
     var currentBuzzObject = null;
     
+    /**
+    * @desc song playing
+    * @type {Object}
+    */
+    this.currentSong = null;  
+
     // -------setSong
     /**
-    * @function setSong
+    * @function setSong in SongPlayer
     * @desc Stops currently playing song and loads new audio file as currentBuzzObject
     * @param {Object} song
     */
-    var setSong = function(song) 
+    var setSong = function(song) //SongPlayer service
     {
         if (currentBuzzObject) 
-        {
-            currentBuzzObject.stop();
-            currentSong.playing = null;
-        }
+        { stopSong(); }
  
         currentBuzzObject = new buzz.sound(song.audioUrl, 
         { formats: ['mp3'], preload: true });
  
-        currentSong = song;
+        SongPlayer.currentSong = song;
     };
+    
+    var stopSong = function()
+    {
+        currentBuzzObject.stop();
+        SongPlayer.currentSong.playing = null;
+    }
     
     
     /**
     * @function playSong
     * @desc Play current song 
     */
-    var playSong = function() 
+    var playSong = function() //SongPlayer service
     {
         currentBuzzObject.play();  
-        currentSong.playing = true;
+        SongPlayer.currentSong.playing = true;
     }
     
-    // -------play
+    // -------play  //SongPlayer service
     /**
     * @function play
     * @desc Manage song selection click: play or pause
@@ -138,19 +157,18 @@ blocJams.service('SongPlayer', function()
     */
     this.play = function(song) 
     {   
-        if (currentSong !== song) 
-        {
-            setSong(song);
-            playSong();
-        }
-        else if (currentSong === song) 
-        {
-            if (currentBuzzObject.isPaused()) 
-            {  currentBuzzObject.play();   }
-        } 
+        song = song || SongPlayer.currentSong;
+        if (SongPlayer.currentSong !== song) 
+        { setSong(song); }
+        playSong();
+        
+        //this.test++;
+        this.songName = song.name;
+        this.songPlaying = true;
+        //console.log("test:"+this.test+":", this.songName);
     };
 
-    // -------pause
+    // -------pause   //SongPlayer service
     /**
     * @function pause
     * @desc pause currently playing song 
@@ -158,34 +176,126 @@ blocJams.service('SongPlayer', function()
     */
     this.pause = function(song) 
     {
+        song = song || SongPlayer.currentSong;
         currentBuzzObject.pause();
-        song.playing = false;
+        SongPlayer.currentSong.playing = false;
+        this.songPlaying = false;
+        
+        this.songName = song.name;
     };
     
+    this.previous = function()   //SongPlayer service
+    {
+        var currentSongIndex = getSongIndex(SongPlayer.currentSong);
+        currentSongIndex--;
+        
+        if (currentSongIndex < 0) 
+        {
+            currentBuzzObject.stop();
+            currentSongIndex = currentAlbum.songs.length-1;
+         } 
+            
+        var song = currentAlbum.songs[currentSongIndex];
+        setSong(song);
+        playSong(song);
+        
+        this.songName = song.name;
+        this.songPlaying = true;
+    };
+    
+    this.next = function()   //SongPlayer service
+    {
+        var currentSongIndex = getSongIndex(SongPlayer.currentSong);
+        currentSongIndex++;
+        
+        if (currentSongIndex > currentAlbum.songs.length-1) 
+        {
+            currentBuzzObject.stop();
+            currentSongIndex = 0;
+         } 
+            
+        var song = currentAlbum.songs[currentSongIndex];
+        setSong(song);
+        playSong(song);
+        
+        this.songName = song.name;
+        this.songPlaying = true;
+    };
+
+    this.getTest = function()
+    { return test; }
 });
 
 // ------ Controllers --------------------------------------
 blocJams.controller('AlbumController', ['$scope', 'SongPlayer', 'Fixtures',
                     function($scope, SongPlayer, Fixtures) 
 {
-    console.log('AlbumContorller loaded');
-    $scope.album = Fixtures.getAlbum();
-    //$scope.album = angular.copy(albumPicasso);
-    $scope.songNumber = 3;
+    console.log('AlbumContorller loaded: ',  SongPlayer.test);
+    $scope.album = Fixtures.getAlbum();   
+    $scope.song = SongPlayer.currentSong;
     
     // test service
-    $scope.number = 5;
+    //$scope.number = 5;
     //$scope.findSquare = function () 
     //{  $scope.answer = SongPlayer.square($scope.number); }
 
     // play song
-    $scope.play = function (song) 
-    {  SongPlayer.play(song); }
+    $scope.play = function (song)  //AlbumController
+    {  
+        SongPlayer.play(song); 
+        //$scope.song = SongPlayer.currentSong;
+        //$scope.test1 = SongPlayer.test;
+        $scope.songName = SongPlayer.songName;
+        $scope.songLength = SongPlayer.currentSong.length;
+        $scope.songPlaying = SongPlayer.currentSong.playing;
+        $scope.songPlaying = SongPlayer.songPlaying;
+        $scope.$apply();
+    }
     
     // pause song
-    $scope.pause = function (song) 
-    {  SongPlayer.pause(song); }
+    $scope.pause = function (song)   //AlbumController
+    {  
+        SongPlayer.pause(song);
+        $scope.song = song;
+        $scope.songName = SongPlayer.songName;
+        $scope.songLength = SongPlayer.currentSong.length;
+        $scope.songPlaying = SongPlayer.songPlaying;
+    }
+    
+    $scope.previous = function()  //AlbumController
+    { 
+        $scope.songName = "";
+        $scope.songLength = "";
+        $scope.songPlaying = "";
+        
+        SongPlayer.previous();
+        $scope.songName = SongPlayer.songName;
+        $scope.songLength = SongPlayer.currentSong.length;
+        $scope.songPlaying = SongPlayer.songPlaying;
+        $scope.$apply();
+    }
+    
+    $scope.next = function()  //AlbumController
+    { 
+        $scope.songName = "";
+        $scope.songLength = "";
+        $scope.songPlaying = "";
+        
+        SongPlayer.next();
+        $scope.songName = SongPlayer.songName;
+        $scope.songLength = SongPlayer.currentSong.length;
+        $scope.songPlaying = SongPlayer.songPlaying;
+        //$scope.$apply();
+    }
  
+}]);
+
+blocJams.controller('PlayerBarCtrl', ['$scope', 'SongPlayer', 'Fixtures',
+                    function($scope, SongPlayer, Fixtures) 
+{
+    console.log('PlayerBarCtrl loaded');
+    $scope.previous = function()  //AlbumController
+    { SongPlayer.play(song); }
 }]);
 
 

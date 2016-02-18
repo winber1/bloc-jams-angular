@@ -312,11 +312,15 @@ blocJams.directive('seekBar', ['$document', function($document) {
                  return {width: percentString()};
              };
             
+             scope.thumbStyle = function() {
+                 return {left: percentString()};
+             };
+            
             scope.onClickSeekBar = function(event) {
              var percent = calculatePercent(seekBar, event);
              scope.value = percent * scope.max;
                 
-    console.log("scope.value:" + scope.value);
+console.log("scope.value:" + scope.value);
             };
             
             scope.trackThumb = function() {
